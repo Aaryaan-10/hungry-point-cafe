@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +9,8 @@
     name="description"
     content="Hungry Point Cafe — Good Food • Good Mood • Good Point."
   >
+
+  <meta name="theme-color" content="#111111">
 
   <title>Hungry Point Cafe | Good Food • Good Mood • Good Point</title>
 
@@ -20,7 +23,7 @@
     rel="stylesheet"
   >
 
-  <!-- CSS -->
+  <!-- Website CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -29,15 +32,14 @@
   <!-- Noise / Texture -->
   <div class="noise"></div>
 
+
   <!-- ================= NAVIGATION ================= -->
 
   <header class="nav">
 
     <a class="brand" href="#home">
 
-      <span class="brand-mark">
-        HP
-      </span>
+      <span class="brand-mark">HP</span>
 
       <span>
         <strong>HUNGRY POINT</strong>
@@ -46,35 +48,43 @@
 
     </a>
 
-    <!-- Mobile Menu -->
+
+    <!-- Mobile Menu Button -->
     <button
       class="menu-toggle"
-      aria-label="Open menu"
+      id="menuToggle"
+      aria-label="Open navigation menu"
       aria-expanded="false"
     >
       ☰
     </button>
 
-    <!-- Navigation Links -->
-    <nav class="nav-links">
+
+    <!-- Navigation -->
+    <nav class="nav-links" id="navLinks">
 
       <a href="#home">Home</a>
-
       <a href="#menu">Menu</a>
-
       <a href="#about">About</a>
-
       <a href="#delivery">Delivery</a>
-
       <a href="#contact">Contact</a>
 
     </nav>
 
-    <a class="nav-order" href="#contact">
-      Order Now <span>↗</span>
-    </a>
+
+    <!-- Cart / Order Button -->
+    <button class="nav-order" id="openCart">
+
+      Order Now
+
+      <span>↗</span>
+
+      <b class="cart-count" id="cartCount">0</b>
+
+    </button>
 
   </header>
+
 
 
   <!-- ================= MAIN ================= -->
@@ -86,8 +96,6 @@
 
     <section class="hero">
 
-      <!-- Hero Text -->
-
       <div class="hero-copy reveal">
 
         <div class="eyebrow">
@@ -95,11 +103,13 @@
           Fresh • Local • Delicious
         </div>
 
+
         <h1>
           GOOD FOOD.<br>
           <em>GOOD MOOD.</em><br>
           GOOD POINT.
         </h1>
+
 
         <p>
           Welcome to Hungry Point Cafe — your neighborhood stop
@@ -107,15 +117,16 @@
           refreshing treats.
         </p>
 
+
         <div class="hero-actions">
 
           <a class="btn primary" href="#menu">
             Explore Menu <span>↓</span>
           </a>
 
-          <a class="btn ghost" href="#contact">
-            Find Us <span>↗</span>
-          </a>
+          <button class="btn ghost" id="heroOrderBtn">
+            Order Online <span>↗</span>
+          </button>
 
         </div>
 
@@ -130,8 +141,8 @@
           </div>
 
           <div>
-            <b>6+</b>
-            <span>Menu categories</span>
+            <b>17+</b>
+            <span>Menu items</span>
           </div>
 
           <div>
@@ -144,12 +155,14 @@
       </div>
 
 
+
       <!-- Hero Visual -->
 
       <div class="hero-visual reveal">
 
         <div class="ring ring-one"></div>
         <div class="ring ring-two"></div>
+
 
         <div class="hero-card">
 
@@ -160,9 +173,11 @@
 
         </div>
 
+
         <div class="floating-tag tag-top">
           GOOD FOOD <span>♥</span>
         </div>
+
 
         <div class="floating-tag tag-bottom">
 
@@ -177,6 +192,7 @@
       </div>
 
     </section>
+
 
 
     <!-- ================= TICKER ================= -->
@@ -197,6 +213,7 @@
       <div>★ CHOWMEIN</div>
 
     </section>
+
 
 
     <!-- ================= MENU ================= -->
@@ -222,15 +239,17 @@
 
         </div>
 
+
         <p>
-          Simple favorites, bold flavors and prices
-          straight from our cafe menu.
+          Choose your favorites and add them
+          directly to your order.
         </p>
 
       </div>
 
 
-      <!-- Menu Grid -->
+
+      <!-- ================= MENU GRID ================= -->
 
       <div class="menu-grid">
 
@@ -239,16 +258,11 @@
 
         <article class="food-card reveal">
 
-          <span class="food-icon">
-            🥟
-          </span>
+          <span class="food-icon">🥟</span>
 
           <div class="food-title">
-
             <h3>Momo</h3>
-
             <span>01</span>
-
           </div>
 
           <p>
@@ -256,33 +270,61 @@
             house-style filling.
           </p>
 
-          <div class="price-row">
-            <span>Veg Momo</span>
-            <b>Rs. 100</b>
-          </div>
 
           <div class="price-row">
+
+            <span>Veg Momo</span>
+
+            <div class="food-action">
+
+              <b>Rs. 100</b>
+
+              <button
+                class="add-btn"
+                data-name="Veg Momo"
+                data-price="100"
+              >
+                +
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <div class="price-row">
+
             <span>Chicken Momo</span>
-            <b>Rs. 120</b>
+
+            <div class="food-action">
+
+              <b>Rs. 120</b>
+
+              <button
+                class="add-btn"
+                data-name="Chicken Momo"
+                data-price="120"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
         </article>
+
 
 
         <!-- CHOWMEIN -->
 
         <article class="food-card reveal">
 
-          <span class="food-icon">
-            🍜
-          </span>
+          <span class="food-icon">🍜</span>
 
           <div class="food-title">
-
             <h3>Chowmein</h3>
-
             <span>02</span>
-
           </div>
 
           <p>
@@ -290,33 +332,61 @@
             flavor and fresh ingredients.
           </p>
 
-          <div class="price-row">
-            <span>Veg Chowmein</span>
-            <b>Rs. 100</b>
-          </div>
 
           <div class="price-row">
+
+            <span>Veg Chowmein</span>
+
+            <div class="food-action">
+
+              <b>Rs. 100</b>
+
+              <button
+                class="add-btn"
+                data-name="Veg Chowmein"
+                data-price="100"
+              >
+                +
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <div class="price-row">
+
             <span>Chicken Chowmein</span>
-            <b>Rs. 180</b>
+
+            <div class="food-action">
+
+              <b>Rs. 180</b>
+
+              <button
+                class="add-btn"
+                data-name="Chicken Chowmein"
+                data-price="180"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
         </article>
+
 
 
         <!-- KATTI ROLL -->
 
         <article class="food-card reveal">
 
-          <span class="food-icon">
-            🌯
-          </span>
+          <span class="food-icon">🌯</span>
 
           <div class="food-title">
-
             <h3>Katti Roll</h3>
-
             <span>03</span>
-
           </div>
 
           <p>
@@ -324,33 +394,61 @@
             fillings and fresh crunch.
           </p>
 
-          <div class="price-row">
-            <span>Egg Katti Roll</span>
-            <b>Rs. 130</b>
-          </div>
 
           <div class="price-row">
+
+            <span>Egg Katti Roll</span>
+
+            <div class="food-action">
+
+              <b>Rs. 130</b>
+
+              <button
+                class="add-btn"
+                data-name="Egg Katti Roll"
+                data-price="130"
+              >
+                +
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <div class="price-row">
+
             <span>Chicken Katti Roll</span>
-            <b>Rs. 150</b>
+
+            <div class="food-action">
+
+              <b>Rs. 150</b>
+
+              <button
+                class="add-btn"
+                data-name="Chicken Katti Roll"
+                data-price="150"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
         </article>
+
 
 
         <!-- SNACKS -->
 
         <article class="food-card reveal">
 
-          <span class="food-icon">
-            🍟
-          </span>
+          <span class="food-icon">🍟</span>
 
           <div class="food-title">
-
             <h3>Snacks</h3>
-
             <span>04</span>
-
           </div>
 
           <p>
@@ -358,43 +456,103 @@
             or simply satisfying a craving.
           </p>
 
+
           <div class="price-row">
+
             <span>Aloo Nimki</span>
-            <b>Rs. 50</b>
+
+            <div class="food-action">
+
+              <b>Rs. 50</b>
+
+              <button
+                class="add-btn"
+                data-name="Aloo Nimki"
+                data-price="50"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
+
           <div class="price-row">
+
             <span>Chatpate</span>
-            <b>Rs. 50</b>
+
+            <div class="food-action">
+
+              <b>Rs. 50</b>
+
+              <button
+                class="add-btn"
+                data-name="Chatpate"
+                data-price="50"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
+
           <div class="price-row">
+
             <span>Pani Puri</span>
-            <b>Rs. 30</b>
+
+            <div class="food-action">
+
+              <b>Rs. 30</b>
+
+              <button
+                class="add-btn"
+                data-name="Pani Puri"
+                data-price="30"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
+
           <div class="price-row">
+
             <span>French Fries</span>
-            <b>Rs. 100</b>
+
+            <div class="food-action">
+
+              <b>Rs. 100</b>
+
+              <button
+                class="add-btn"
+                data-name="French Fries"
+                data-price="100"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
         </article>
+
 
 
         <!-- TEA -->
 
         <article class="food-card reveal">
 
-          <span class="food-icon">
-            ☕
-          </span>
+          <span class="food-icon">☕</span>
 
           <div class="food-title">
-
             <h3>Tea</h3>
-
             <span>05</span>
-
           </div>
 
           <p>
@@ -402,38 +560,82 @@
             perfect for a quick break.
           </p>
 
+
           <div class="price-row">
+
             <span>Matka Chiya</span>
-            <b>Rs. 40</b>
+
+            <div class="food-action">
+
+              <b>Rs. 40</b>
+
+              <button
+                class="add-btn"
+                data-name="Matka Chiya"
+                data-price="40"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
+
           <div class="price-row">
+
             <span>Milk Tea</span>
-            <b>Rs. 25</b>
+
+            <div class="food-action">
+
+              <b>Rs. 25</b>
+
+              <button
+                class="add-btn"
+                data-name="Milk Tea"
+                data-price="25"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
+
           <div class="price-row">
+
             <span>Black Tea</span>
-            <b>Rs. 20</b>
+
+            <div class="food-action">
+
+              <b>Rs. 20</b>
+
+              <button
+                class="add-btn"
+                data-name="Black Tea"
+                data-price="20"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
         </article>
+
 
 
         <!-- DRINKS -->
 
         <article class="food-card featured reveal">
 
-          <span class="food-icon">
-            🥤
-          </span>
+          <span class="food-icon">🥤</span>
 
           <div class="food-title">
-
             <h3>Drinks & Dessert</h3>
-
             <span>06</span>
-
           </div>
 
           <p>
@@ -441,29 +643,94 @@
             your meal on a happy note.
           </p>
 
+
           <div class="price-row">
+
             <span>Plain Lassi</span>
-            <b>Rs. 80</b>
+
+            <div class="food-action">
+
+              <b>Rs. 80</b>
+
+              <button
+                class="add-btn"
+                data-name="Plain Lassi"
+                data-price="80"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
+
           <div class="price-row">
+
             <span>Chocolate Lassi</span>
-            <b>Rs. 100</b>
+
+            <div class="food-action">
+
+              <b>Rs. 100</b>
+
+              <button
+                class="add-btn"
+                data-name="Chocolate Lassi"
+                data-price="100"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
+
           <div class="price-row">
+
             <span>Lemonade</span>
-            <b>Rs. 150</b>
+
+            <div class="food-action">
+
+              <b>Rs. 150</b>
+
+              <button
+                class="add-btn"
+                data-name="Lemonade"
+                data-price="150"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
+
           <div class="price-row">
+
             <span>Ice Cream</span>
-            <b>Rs. 50</b>
+
+            <div class="food-action">
+
+              <b>Rs. 50</b>
+
+              <button
+                class="add-btn"
+                data-name="Ice Cream"
+                data-price="50"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
         </article>
 
       </div>
+
 
 
       <!-- Full Menu -->
@@ -483,6 +750,7 @@
 
         </div>
 
+
         <button
           class="btn primary"
           id="menuPreview"
@@ -493,6 +761,7 @@
       </div>
 
     </section>
+
 
 
     <!-- ================= ABOUT ================= -->
@@ -515,12 +784,14 @@
 
         </div>
 
+
         <div class="scribble">
           Eat well.<br>
           Feel good.
         </div>
 
       </div>
+
 
 
       <div class="story-copy reveal">
@@ -530,10 +801,12 @@
           Our Point of View
         </div>
 
+
         <h2>
           Come hungry.<br>
           <em>Leave happy.</em>
         </h2>
+
 
         <p>
           Hungry Point Cafe is all about good food,
@@ -541,23 +814,26 @@
           eat and spend time together.
         </p>
 
+
         <p>
           From a plate of momos to a hot cup of
           chiya, we keep the menu familiar,
           flavorful and made for everyday cravings.
         </p>
 
+
         <a
           class="text-link"
-          href="#contact"
+          href="#menu"
         >
-          Come say hello
+          Order something delicious
           <span>→</span>
         </a>
 
       </div>
 
     </section>
+
 
 
     <!-- ================= DELIVERY ================= -->
@@ -571,6 +847,7 @@
         🛵
       </div>
 
+
       <div>
 
         <div class="eyebrow">
@@ -578,26 +855,31 @@
           Hungry? We've got you.
         </div>
 
+
         <h2>
           FREE DELIVERY
           <em>within 2 KM.</em>
         </h2>
 
+
         <p>
-          Call us to place your order and enjoy
-          your favorites at home.
+          Choose your favorites and send your
+          order directly to Hungry Point Cafe
+          through WhatsApp.
         </p>
 
       </div>
 
-      <a
+
+      <button
         class="btn light"
-        href="#contact"
+        id="deliveryOrderBtn"
       >
         Order Now ↗
-      </a>
+      </button>
 
     </section>
+
 
 
     <!-- ================= CONTACT ================= -->
@@ -616,6 +898,7 @@
             Visit Hungry Point
           </div>
 
+
           <h2>
             Let's make your<br>
             <em>next meal</em> special.
@@ -623,12 +906,14 @@
 
         </div>
 
+
         <p>
           Contact Hungry Point Cafe for orders,
           delivery and general information.
         </p>
 
       </div>
+
 
 
       <div class="contact-grid">
@@ -652,6 +937,7 @@
         </div>
 
 
+
         <!-- PHONE -->
 
         <div class="contact-card reveal">
@@ -663,14 +949,19 @@
           </h3>
 
           <p>
-            <a href="tel:+9779800000000">
+
+            <a href="tel:+9779810487212">
               9810487212
             </a>
+
             <br>
+
             Available during opening hours
+
           </p>
 
         </div>
+
 
 
         <!-- HOURS -->
@@ -697,6 +988,7 @@
   </main>
 
 
+
   <!-- ================= FOOTER ================= -->
 
   <footer>
@@ -713,9 +1005,11 @@
 
     </div>
 
+
     <p>
       Good Food • Good Mood • Good Point
     </p>
+
 
     <small>
       © <span id="year"></span>
@@ -724,6 +1018,358 @@
     </small>
 
   </footer>
+
+
+
+  <!-- ================= CART DRAWER ================= -->
+
+  <div
+    class="cart-overlay"
+    id="cartOverlay"
+    aria-hidden="true"
+  ></div>
+
+
+  <aside
+    class="cart-drawer"
+    id="cartDrawer"
+    aria-hidden="true"
+    aria-label="Shopping cart"
+  >
+
+    <div class="cart-header">
+
+      <div>
+
+        <span class="eyebrow">
+          <span></span>
+          Your Order
+        </span>
+
+        <h2>
+          Your <em>Cart</em>
+        </h2>
+
+      </div>
+
+
+      <button
+        class="cart-close"
+        id="closeCart"
+        aria-label="Close cart"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+
+    <!-- Cart Items -->
+
+    <div
+      class="cart-items"
+      id="cartItems"
+    >
+
+      <div class="empty-cart">
+
+        <div>🛒</div>
+
+        <h3>
+          Your cart is empty
+        </h3>
+
+        <p>
+          Add something delicious from the menu.
+        </p>
+
+        <button
+          class="btn primary"
+          id="browseMenuBtn"
+        >
+          Browse Menu
+        </button>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Cart Bottom -->
+
+    <div class="cart-bottom">
+
+      <div class="cart-total-row">
+
+        <span>
+          Total
+        </span>
+
+        <strong id="cartTotal">
+          Rs. 0
+        </strong>
+
+      </div>
+
+
+      <button
+        class="checkout-btn"
+        id="checkoutBtn"
+        disabled
+      >
+        Continue to Checkout
+        <span>→</span>
+      </button>
+
+    </div>
+
+  </aside>
+
+
+
+  <!-- ================= CHECKOUT MODAL ================= -->
+
+  <div
+    class="checkout-overlay"
+    id="checkoutOverlay"
+    aria-hidden="true"
+  >
+
+    <div
+      class="checkout-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="checkoutTitle"
+    >
+
+      <button
+        class="checkout-close"
+        id="closeCheckout"
+        aria-label="Close checkout"
+      >
+        ×
+      </button>
+
+
+      <div class="checkout-heading">
+
+        <div class="eyebrow">
+          <span></span>
+          Almost there
+        </div>
+
+        <h2 id="checkoutTitle">
+          Complete your <em>order.</em>
+        </h2>
+
+        <p>
+          Enter your details and we'll prepare
+          a WhatsApp order for Hungry Point Cafe.
+        </p>
+
+      </div>
+
+
+
+      <!-- Checkout Form -->
+
+      <form id="checkoutForm">
+
+
+        <!-- Customer Name -->
+
+        <div class="form-group">
+
+          <label for="customerName">
+            Your Name *
+          </label>
+
+          <input
+            type="text"
+            id="customerName"
+            name="customerName"
+            placeholder="Enter your name"
+            autocomplete="name"
+            required
+          >
+
+        </div>
+
+
+
+        <!-- Customer Phone -->
+
+        <div class="form-group">
+
+          <label for="customerPhone">
+            Phone Number *
+          </label>
+
+          <input
+            type="tel"
+            id="customerPhone"
+            name="customerPhone"
+            placeholder="98XXXXXXXX"
+            autocomplete="tel"
+            inputmode="tel"
+            required
+          >
+
+        </div>
+
+
+
+        <!-- Order Type -->
+
+        <div class="form-group">
+
+          <label>
+            Order Type *
+          </label>
+
+
+          <div class="order-type">
+
+            <label class="order-option">
+
+              <input
+                type="radio"
+                name="orderType"
+                value="Delivery"
+                checked
+              >
+
+              <span>
+                🛵 Delivery
+              </span>
+
+            </label>
+
+
+            <label class="order-option">
+
+              <input
+                type="radio"
+                name="orderType"
+                value="Pickup"
+              >
+
+              <span>
+                🏪 Pickup
+              </span>
+
+            </label>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- Address -->
+
+        <div
+          class="form-group"
+          id="addressGroup"
+        >
+
+          <label for="customerAddress">
+            Delivery Address *
+          </label>
+
+          <textarea
+            id="customerAddress"
+            name="customerAddress"
+            rows="3"
+            placeholder="Enter your delivery address"
+          ></textarea>
+
+          <small>
+            Free delivery is available within 2 KM.
+          </small>
+
+        </div>
+
+
+
+        <!-- Notes -->
+
+        <div class="form-group">
+
+          <label for="orderNotes">
+            Special Instructions
+          </label>
+
+          <textarea
+            id="orderNotes"
+            name="orderNotes"
+            rows="2"
+            placeholder="Example: Less spicy, no onion..."
+          ></textarea>
+
+        </div>
+
+
+
+        <!-- Checkout Summary -->
+
+        <div class="checkout-summary">
+
+          <div class="summary-title">
+            Order Summary
+          </div>
+
+          <div id="checkoutSummaryItems"></div>
+
+          <div class="summary-total">
+
+            <span>
+              Total
+            </span>
+
+            <strong id="checkoutTotal">
+              Rs. 0
+            </strong>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- WhatsApp Order -->
+
+        <button
+          type="submit"
+          class="whatsapp-btn"
+        >
+
+          <span class="whatsapp-icon">
+            ✓
+          </span>
+
+          Send Order on WhatsApp
+
+          <span>
+            ↗
+          </span>
+
+        </button>
+
+
+        <p class="checkout-note">
+          WhatsApp will open with your order details.
+          Review the message and press Send.
+        </p>
+
+      </form>
+
+    </div>
+
+  </div>
+
 
 
   <!-- ================= MENU IMAGE MODAL ================= -->
@@ -737,10 +1383,11 @@
     <button
       class="modal-close"
       id="modalClose"
-      aria-label="Close"
+      aria-label="Close menu image"
     >
       ×
     </button>
+
 
     <img
       src="assets/menu.png"
@@ -750,9 +1397,11 @@
   </div>
 
 
-  <!-- JavaScript -->
+
+  <!-- ================= JAVASCRIPT ================= -->
 
   <script src="script.js"></script>
 
 </body>
 </html>
+```
