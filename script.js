@@ -1,508 +1,806 @@
-```javascript
 /* =========================================================
    HUNGRY POINT CAFE
-   CART + CHECKOUT + WHATSAPP ORDER SYSTEM
-   ========================================================= */
+   PREMIUM WEBSITE JAVASCRIPT
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* =======================================================
+     CONFIGURATION
+  ======================================================= */
+
+  const WHATSAPP_NUMBER = "9779810487212";
+
+  const CAFE_NAME = "Hungry Point Cafe";
+
+  const CAFE_ADDRESS = "Sundarharaincha-3, Morang, Nepal";
 
 
-/* ================= CONFIG ================= */
+  /* =======================================================
+     HELPERS
+  ======================================================= */
 
-const WHATSAPP_NUMBER = "9779810487212";
+  const $ = (selector, parent = document) =>
+    parent.querySelector(selector);
 
+  const $$ = (selector, parent = document) =>
+    [...parent.querySelectorAll(selector)];
 
-/* ================= CART ================= */
-
-let cart = JSON.parse(localStorage.getItem("hungryPointCart")) || [];
-
-
-/* ================= ELEMENTS ================= */
-
-const cartDrawer = document.getElementById("cartDrawer");
-const cartOverlay = document.getElementById("cartOverlay");
-const openCartBtn = document.getElementById("openCart");
-const closeCartBtn = document.getElementById("closeCart");
-
-const cartItems = document.getElementById("cartItems");
-const cartCount = document.getElementById("cartCount");
-const cartTotal = document.getElementById("cartTotal");
-
-const checkoutBtn = document.getElementById("checkoutBtn");
-
-const checkoutOverlay = document.getElementById("checkoutOverlay");
-const closeCheckoutBtn = document.getElementById("closeCheckout");
-
-const checkoutForm = document.getElementById("checkoutForm");
-
-const checkoutSummaryItems =
-  document.getElementById("checkoutSummaryItems");
-
-const checkoutTotal =
-  document.getElementById("checkoutTotal");
-
-const addressGroup =
-  document.getElementById("addressGroup");
-
-const customerAddress =
-  document.getElementById("customerAddress");
-
-const menuPreview =
-  document.getElementById("menuPreview");
-
-const modal =
-  document.getElementById("modal");
-
-const modalClose =
-  document.getElementById("modalClose");
-
-const menuToggle =
-  document.getElementById("menuToggle");
-
-const navLinks =
-  document.getElementById("navLinks");
-
-const heroOrderBtn =
-  document.getElementById("heroOrderBtn");
-
-const deliveryOrderBtn =
-  document.getElementById("deliveryOrderBtn");
-
-const browseMenuBtn =
-  document.getElementById("browseMenuBtn");
-
-const year =
-  document.getElementById("year");
+  const formatPrice = (price) =>
+    `Rs. ${Number(price).toLocaleString("en-IN")}`;
 
 
-/* ================= YEAR ================= */
+  /* =======================================================
+     PAGE LOADER
+  ======================================================= */
 
-if (year) {
-  year.textContent = new Date().getFullYear();
-}
+  window.addEventListener("load", () => {
+
+    const loader = $(".page-loader");
+
+    if (loader) {
+      setTimeout(() => {
+        loader.classList.add("loaded");
+      }, 500);
+    }
+
+  });
 
 
-/* ================= SAVE CART ================= */
+  /* =======================================================
+     HEADER SCROLL EFFECT
+  ======================================================= */
 
-function saveCart() {
+  const header = $(".site-header");
 
-  localStorage.setItem(
-    "hungryPointCart",
-    JSON.stringify(cart)
+  const handleHeaderScroll = () => {
+
+    if (!header) return;
+
+    if (window.scrollY > 30) {
+      header.classList.add("scrolled");
+    } else {
+      header.classList.remove("scrolled");
+    }
+
+  };
+
+  handleHeaderScroll();
+
+  window.addEventListener(
+    "scroll",
+    handleHeaderScroll,
+    { passive: true }
   );
 
-}
 
+  /* =======================================================
+     MOBILE NAVIGATION
+  ======================================================= */
 
-/* ================= FORMAT MONEY ================= */
+  const menuToggle = $(".menu-toggle");
+  const mainNav = $(".main-nav");
+  const mobileOverlay = $(".mobile-overlay");
 
-function money(amount) {
+  const closeMobileMenu = () => {
 
-  return `Rs. ${amount.toLocaleString("en-IN")}`;
+    if (!menuToggle || !mainNav) return;
 
-}
+    menuToggle.classList.remove("active");
+    mainNav.classList.remove("active");
 
+    if (mobileOverlay) {
+      mobileOverlay.classList.remove("active");
+    }
 
-/* ================= ADD TO CART ================= */
+  };
 
-function addToCart(name, price) {
+  const openMobileMenu = () => {
 
-  const existingItem =
-    cart.find(item => item.name === name);
+    if (!menuToggle || !mainNav) return;
 
-  if (existingItem) {
+    menuToggle.classList.add("active");
+    mainNav.classList.add("active");
 
-    existingItem.quantity += 1;
+    if (mobileOverlay) {
+      mobileOverlay.classList.add("active");
+    }
 
-  } else {
+  };
 
-    cart.push({
-      name: name,
-      price: Number(price),
-      quantity: 1
+  if (menuToggle) {
+
+    menuToggle.addEventListener("click", () => {
+
+      if (mainNav.classList.contains("active")) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
+      }
+
     });
 
   }
 
-  saveCart();
-
-  renderCart();
-
-  showAddedMessage(name);
-
-}
-
-
-/* ================= REMOVE ITEM ================= */
-
-function removeFromCart(name) {
-
-  cart =
-    cart.filter(item => item.name !== name);
-
-  saveCart();
-
-  renderCart();
-
-}
-
-
-/* ================= CHANGE QUANTITY ================= */
-
-function changeQuantity(name, change) {
-
-  const item =
-    cart.find(item => item.name === name);
-
-  if (!item) return;
-
-  item.quantity += change;
-
-  if (item.quantity <= 0) {
-
-    removeFromCart(name);
-
-    return;
-
+  if (mobileOverlay) {
+    mobileOverlay.addEventListener(
+      "click",
+      closeMobileMenu
+    );
   }
 
-  saveCart();
+  $$(".nav-link").forEach(link => {
 
-  renderCart();
+    link.addEventListener("click", () => {
+      closeMobileMenu();
+    });
 
-}
+  });
 
 
-/* ================= CART TOTAL ================= */
+  /* =======================================================
+     ACTIVE NAVIGATION
+  ======================================================= */
 
-function getCartTotal() {
+  const sections = $$("section[id]");
+  const navLinks = $$(".nav-link");
 
-  return cart.reduce(
-    (total, item) =>
-      total + item.price * item.quantity,
-    0
+  const updateActiveNav = () => {
+
+    let current = "";
+
+    sections.forEach(section => {
+
+      const top =
+        section.getBoundingClientRect().top;
+
+      if (top <= 140) {
+        current = section.id;
+      }
+
+    });
+
+    navLinks.forEach(link => {
+
+      const href = link.getAttribute("href");
+
+      link.classList.toggle(
+        "active",
+        href === `#${current}`
+      );
+
+    });
+
+  };
+
+  window.addEventListener(
+    "scroll",
+    updateActiveNav,
+    { passive: true }
   );
 
-}
 
+  /* =======================================================
+     SCROLL REVEAL
+  ======================================================= */
 
-/* ================= CART ITEM COUNT ================= */
+  const revealElements = $$(".reveal");
 
-function getCartCount() {
+  if ("IntersectionObserver" in window) {
 
-  return cart.reduce(
-    (total, item) =>
-      total + item.quantity,
-    0
-  );
+    const revealObserver =
+      new IntersectionObserver(
+        (entries, observer) => {
 
-}
+          entries.forEach(entry => {
 
+            if (entry.isIntersecting) {
 
-/* ================= RENDER CART ================= */
+              entry.target.classList.add("visible");
 
-function renderCart() {
+              observer.unobserve(entry.target);
 
-  if (!cartItems) return;
+            }
 
+          });
 
-  /* Cart count */
-
-  if (cartCount) {
-
-    cartCount.textContent =
-      getCartCount();
-
-  }
-
-
-  /* Total */
-
-  if (cartTotal) {
-
-    cartTotal.textContent =
-      money(getCartTotal());
-
-  }
-
-
-  /* Checkout button */
-
-  if (checkoutBtn) {
-
-    checkoutBtn.disabled =
-      cart.length === 0;
-
-  }
-
-
-  /* Empty cart */
-
-  if (cart.length === 0) {
-
-    cartItems.innerHTML = `
-
-      <div class="empty-cart">
-
-        <div>🛒</div>
-
-        <h3>
-          Your cart is empty
-        </h3>
-
-        <p>
-          Add something delicious from the menu.
-        </p>
-
-        <button
-          class="btn primary"
-          id="browseMenuBtn"
-          type="button"
-        >
-          Browse Menu
-        </button>
-
-      </div>
-
-    `;
-
-    const newBrowseBtn =
-      document.getElementById("browseMenuBtn");
-
-    if (newBrowseBtn) {
-
-      newBrowseBtn.addEventListener(
-        "click",
-        () => {
-
-          closeCart();
-
-          document
-            .getElementById("menu")
-            ?.scrollIntoView({
-              behavior: "smooth"
-            });
-
+        },
+        {
+          threshold: 0.12,
+          rootMargin: "0px 0px -40px 0px"
         }
       );
 
-    }
+    revealElements.forEach(element => {
+      revealObserver.observe(element);
+    });
 
-    return;
+  } else {
+
+    revealElements.forEach(element => {
+      element.classList.add("visible");
+    });
 
   }
 
 
-  /* Render items */
+  /* =======================================================
+     CART DATA
+  ======================================================= */
 
-  cartItems.innerHTML = cart.map(item => {
+  let cart = [];
 
-    const itemTotal =
-      item.price * item.quantity;
 
-    return `
+  /* =======================================================
+     CART ELEMENTS
+  ======================================================= */
 
-      <div class="cart-item">
+  const cartDrawer = $(".cart-drawer");
+  const drawerOverlay = $(".drawer-overlay");
+  const cartItemsContainer = $(".cart-items");
+  const cartTotalElement = $(".cart-total strong");
 
-        <div class="cart-item-info">
+  const cartOpenButtons = $$(
+    "[data-cart-open]"
+  );
 
-          <h4>
-            ${escapeHTML(item.name)}
-          </h4>
+  const cartCloseButtons = $$(
+    "[data-cart-close]"
+  );
 
-          <span>
-            ${money(item.price)} each
-          </span>
+
+  /* =======================================================
+     OPEN CART
+  ======================================================= */
+
+  const openCart = () => {
+
+    if (!cartDrawer) return;
+
+    cartDrawer.classList.add("active");
+
+    if (drawerOverlay) {
+      drawerOverlay.classList.add("active");
+    }
+
+    document.body.classList.add("no-scroll");
+
+    renderCart();
+
+  };
+
+
+  /* =======================================================
+     CLOSE CART
+  ======================================================= */
+
+  const closeCart = () => {
+
+    if (!cartDrawer) return;
+
+    cartDrawer.classList.remove("active");
+
+    if (drawerOverlay) {
+      drawerOverlay.classList.remove("active");
+    }
+
+    document.body.classList.remove("no-scroll");
+
+  };
+
+
+  cartOpenButtons.forEach(button => {
+
+    button.addEventListener(
+      "click",
+      openCart
+    );
+
+  });
+
+
+  cartCloseButtons.forEach(button => {
+
+    button.addEventListener(
+      "click",
+      closeCart
+    );
+
+  });
+
+
+  if (drawerOverlay) {
+
+    drawerOverlay.addEventListener(
+      "click",
+      closeCart
+    );
+
+  }
+
+
+  /* =======================================================
+     ADD TO CART
+  ======================================================= */
+
+  $$("[data-add-cart]").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const name =
+        button.dataset.name ||
+        button.getAttribute("data-item") ||
+        "Food Item";
+
+      const price =
+        Number(button.dataset.price) || 0;
+
+      const emoji =
+        button.dataset.emoji || "🍽️";
+
+      const existing =
+        cart.find(item => item.name === name);
+
+      if (existing) {
+
+        existing.quantity += 1;
+
+      } else {
+
+        cart.push({
+          name,
+          price,
+          emoji,
+          quantity: 1
+        });
+
+      }
+
+      renderCart();
+
+      showToast(
+        "Added to cart",
+        `${name} has been added.`
+      );
+
+    });
+
+  });
+
+
+  /* =======================================================
+     REMOVE FROM CART
+  ======================================================= */
+
+  const removeFromCart = (index) => {
+
+    if (
+      index < 0 ||
+      index >= cart.length
+    ) return;
+
+    const item = cart[index];
+
+    cart.splice(index, 1);
+
+    renderCart();
+
+    showToast(
+      "Removed",
+      `${item.name} was removed from your cart.`
+    );
+
+  };
+
+
+  /* =======================================================
+     CHANGE QUANTITY
+  ======================================================= */
+
+  const changeQuantity = (
+    index,
+    amount
+  ) => {
+
+    if (
+      index < 0 ||
+      index >= cart.length
+    ) return;
+
+    cart[index].quantity += amount;
+
+    if (cart[index].quantity <= 0) {
+      cart.splice(index, 1);
+    }
+
+    renderCart();
+
+  };
+
+
+  /* =======================================================
+     CART TOTAL
+  ======================================================= */
+
+  const getCartTotal = () => {
+
+    return cart.reduce(
+      (total, item) => {
+
+        return total +
+          item.price * item.quantity;
+
+      },
+      0
+    );
+
+  };
+
+
+  /* =======================================================
+     CART COUNT
+  ======================================================= */
+
+  const updateCartCount = () => {
+
+    const count =
+      cart.reduce(
+        (total, item) =>
+          total + item.quantity,
+        0
+      );
+
+    $$("[data-cart-count]").forEach(
+      element => {
+        element.textContent = count;
+      }
+    );
+
+  };
+
+
+  /* =======================================================
+     RENDER CART
+  ======================================================= */
+
+  const renderCart = () => {
+
+    if (!cartItemsContainer) return;
+
+    updateCartCount();
+
+    if (cart.length === 0) {
+
+      cartItemsContainer.innerHTML = `
+
+        <div class="empty-cart">
+
+          <div class="empty-cart-icon">
+            🛒
+          </div>
+
+          <h3>Your cart is empty</h3>
+
+          <p>
+            Add something delicious from
+            our menu and your order will
+            appear here.
+          </p>
+
+          <button
+            class="outline-btn"
+            type="button"
+            data-cart-browse
+          >
+            Browse Menu
+          </button>
 
         </div>
 
+      `;
 
-        <div class="cart-item-right">
+      if (cartTotalElement) {
+        cartTotalElement.textContent =
+          formatPrice(0);
+      }
 
-          <strong>
-            ${money(itemTotal)}
-          </strong>
+      const browseButton =
+        $("[data-cart-browse]");
+
+      if (browseButton) {
+
+        browseButton.addEventListener(
+          "click",
+          () => {
+
+            closeCart();
+
+            document
+              .querySelector("#menu")
+              ?.scrollIntoView({
+                behavior: "smooth"
+              });
+
+          }
+        );
+
+      }
+
+      return;
+    }
 
 
-          <div class="quantity-controls">
+    cartItemsContainer.innerHTML =
+      cart.map((item, index) => `
+
+        <div class="cart-item">
+
+          <div class="cart-item-icon">
+            ${item.emoji}
+          </div>
+
+          <div class="cart-item-info">
+
+            <strong>
+              ${escapeHTML(item.name)}
+            </strong>
+
+            <small>
+              ${formatPrice(item.price)}
+            </small>
+
+            <div class="cart-quantity">
+
+              <button
+                class="quantity-btn"
+                type="button"
+                data-minus="${index}"
+                aria-label="Decrease quantity"
+              >
+                −
+              </button>
+
+              <span class="quantity-value">
+                ${item.quantity}
+              </span>
+
+              <button
+                class="quantity-btn"
+                type="button"
+                data-plus="${index}"
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
+
+            </div>
+
+          </div>
+
+          <div>
+
+            <div class="cart-item-price">
+              ${formatPrice(
+                item.price * item.quantity
+              )}
+            </div>
 
             <button
               type="button"
-              class="quantity-btn"
-              data-action="decrease"
-              data-name="${escapeAttribute(item.name)}"
-              aria-label="Decrease ${escapeAttribute(item.name)} quantity"
+              data-remove="${index}"
+              style="
+                border:0;
+                background:transparent;
+                color:#77746d;
+                font-size:9px;
+                margin-top:7px;
+                cursor:pointer;
+              "
             >
-              −
-            </button>
-
-
-            <span>
-              ${item.quantity}
-            </span>
-
-
-            <button
-              type="button"
-              class="quantity-btn"
-              data-action="increase"
-              data-name="${escapeAttribute(item.name)}"
-              aria-label="Increase ${escapeAttribute(item.name)} quantity"
-            >
-              +
+              Remove
             </button>
 
           </div>
 
         </div>
 
-      </div>
-
-    `;
-
-  }).join("");
+      `).join("");
 
 
-  /* Quantity buttons */
+    const total = getCartTotal();
 
-  cartItems
-    .querySelectorAll(".quantity-btn")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          const name =
-            button.dataset.name;
-
-          const action =
-            button.dataset.action;
-
-          changeQuantity(
-            name,
-            action === "increase"
-              ? 1
-              : -1
-          );
-
-        }
-      );
-
-    });
-
-}
+    if (cartTotalElement) {
+      cartTotalElement.textContent =
+        formatPrice(total);
+    }
 
 
-/* ================= OPEN CART ================= */
+    $$("[data-minus]", cartItemsContainer)
+      .forEach(button => {
 
-function openCart() {
+        button.addEventListener(
+          "click",
+          () => {
 
-  if (!cartDrawer || !cartOverlay) return;
+            changeQuantity(
+              Number(button.dataset.minus),
+              -1
+            );
 
-  cartDrawer.classList.add("active");
-  cartOverlay.classList.add("active");
+          }
+        );
 
-  cartDrawer.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-
-  cartOverlay.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-
-  document.body.classList.add("cart-open");
-
-}
+      });
 
 
-/* ================= CLOSE CART ================= */
+    $$("[data-plus]", cartItemsContainer)
+      .forEach(button => {
 
-function closeCart() {
+        button.addEventListener(
+          "click",
+          () => {
 
-  if (!cartDrawer || !cartOverlay) return;
+            changeQuantity(
+              Number(button.dataset.plus),
+              1
+            );
 
-  cartDrawer.classList.remove("active");
-  cartOverlay.classList.remove("active");
+          }
+        );
 
-  cartDrawer.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-
-  cartOverlay.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-
-  document.body.classList.remove("cart-open");
-
-}
+      });
 
 
-/* ================= CHECKOUT ================= */
+    $$("[data-remove]", cartItemsContainer)
+      .forEach(button => {
 
-function openCheckout() {
+        button.addEventListener(
+          "click",
+          () => {
 
-  if (cart.length === 0) {
+            removeFromCart(
+              Number(button.dataset.remove)
+            );
 
-    openCart();
+          }
+        );
 
-    return;
+      });
+
+  };
+
+
+  /* =======================================================
+     ESCAPE HTML
+  ======================================================= */
+
+  function escapeHTML(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
 
   }
 
-  closeCart();
 
-  renderCheckoutSummary();
+  /* =======================================================
+     CHECKOUT MODAL
+  ======================================================= */
 
-  checkoutOverlay?.classList.add("active");
+  const checkoutOverlay =
+    $(".checkout-overlay") ||
+    $("[data-checkout-modal]");
 
-  checkoutOverlay?.setAttribute(
-    "aria-hidden",
-    "false"
-  );
+  const checkoutModal =
+    $(".checkout-modal");
 
-  document.body.classList.add(
-    "checkout-open"
-  );
+  const openCheckoutButtons =
+    $$("[data-checkout-open]");
 
-}
-
-
-/* ================= CLOSE CHECKOUT ================= */
-
-function closeCheckout() {
-
-  checkoutOverlay?.classList.remove(
-    "active"
-  );
-
-  checkoutOverlay?.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-
-  document.body.classList.remove(
-    "checkout-open"
-  );
-
-}
+  const closeCheckoutButtons =
+    $$("[data-checkout-close]");
 
 
-/* ================= CHECKOUT SUMMARY ================= */
+  const openCheckout = () => {
 
-function renderCheckoutSummary() {
+    if (cart.length === 0) {
 
-  if (!checkoutSummaryItems) return;
+      showToast(
+        "Your cart is empty",
+        "Please add an item first."
+      );
+
+      return;
+
+    }
+
+    closeCart();
+
+    if (checkoutOverlay) {
+
+      checkoutOverlay.classList.add("active");
+
+    }
+
+    document.body.classList.add("no-scroll");
+
+    renderCheckoutSummary();
+
+  };
 
 
-  checkoutSummaryItems.innerHTML =
-    cart.map(item => {
+  const closeCheckout = () => {
 
-      return `
+    if (checkoutOverlay) {
 
-        <div class="summary-item">
+      checkoutOverlay.classList.remove("active");
+
+    }
+
+    document.body.classList.remove("no-scroll");
+
+  };
+
+
+  openCheckoutButtons.forEach(button => {
+
+    button.addEventListener(
+      "click",
+      openCheckout
+    );
+
+  });
+
+
+  closeCheckoutButtons.forEach(button => {
+
+    button.addEventListener(
+      "click",
+      closeCheckout
+    );
+
+  });
+
+
+  if (checkoutOverlay) {
+
+    checkoutOverlay.addEventListener(
+      "click",
+      event => {
+
+        if (
+          event.target === checkoutOverlay
+        ) {
+
+          closeCheckout();
+
+        }
+
+      }
+    );
+
+  }
+
+
+  /* =======================================================
+     CHECKOUT SUMMARY
+  ======================================================= */
+
+  const renderCheckoutSummary = () => {
+
+    const summary =
+      $("[data-checkout-summary]") ||
+      $(".checkout-summary");
+
+    if (!summary) return;
+
+    const rows =
+      cart.map(item => `
+
+        <div class="full-menu-row">
 
           <span>
             ${escapeHTML(item.name)}
@@ -510,328 +808,68 @@ function renderCheckoutSummary() {
           </span>
 
           <strong>
-            ${money(
+            ${formatPrice(
               item.price * item.quantity
             )}
           </strong>
 
         </div>
 
-      `;
-
-    }).join("");
+      `).join("");
 
 
-  if (checkoutTotal) {
-
-    checkoutTotal.textContent =
-      money(getCartTotal());
-
-  }
-
-}
+    const total = getCartTotal();
 
 
-/* ================= ORDER TYPE ================= */
+    const list =
+      $("[data-summary-items]", summary);
 
-function updateOrderType() {
+    if (list) {
 
-  const selected =
-    document.querySelector(
-      'input[name="orderType"]:checked'
-    );
+      list.innerHTML = rows;
 
-  if (!selected) return;
+    } else {
 
+      const existingRows =
+        $(".summary-items", summary);
 
-  if (selected.value === "Pickup") {
-
-    addressGroup?.classList.add(
-      "hidden"
-    );
-
-    if (customerAddress) {
-
-      customerAddress.required =
-        false;
+      if (existingRows) {
+        existingRows.innerHTML = rows;
+      }
 
     }
 
-  } else {
 
-    addressGroup?.classList.remove(
-      "hidden"
-    );
+    $$("[data-summary-total]")
+      .forEach(element => {
 
-    if (customerAddress) {
+        element.textContent =
+          formatPrice(total);
 
-      customerAddress.required =
-        true;
+      });
 
-    }
+  };
 
-  }
 
-}
+  /* =======================================================
+     CLEAR CART
+  ======================================================= */
 
-
-/* ================= WHATSAPP ORDER ================= */
-
-function sendWhatsAppOrder(event) {
-
-  event.preventDefault();
-
-
-  if (cart.length === 0) {
-
-    alert(
-      "Your cart is empty. Please add an item first."
-    );
-
-    return;
-
-  }
-
-
-  const customerName =
-    document
-      .getElementById("customerName")
-      ?.value
-      .trim();
-
-
-  const customerPhone =
-    document
-      .getElementById("customerPhone")
-      ?.value
-      .trim();
-
-
-  const orderType =
-    document
-      .querySelector(
-        'input[name="orderType"]:checked'
-      )
-      ?.value || "Delivery";
-
-
-  const address =
-    customerAddress
-      ?.value
-      .trim() || "";
-
-
-  const notes =
-    document
-      .getElementById("orderNotes")
-      ?.value
-      .trim() || "";
-
-
-  if (!customerName) {
-
-    alert(
-      "Please enter your name."
-    );
-
-    return;
-
-  }
-
-
-  if (!customerPhone) {
-
-    alert(
-      "Please enter your phone number."
-    );
-
-    return;
-
-  }
-
-
-  if (
-    orderType === "Delivery" &&
-    !address
-  ) {
-
-    alert(
-      "Please enter your delivery address."
-    );
-
-    return;
-
-  }
-
-
-  /* Build item list */
-
-  const orderLines =
-    cart.map(item => {
-
-      const total =
-        item.price * item.quantity;
-
-      return `• ${item.name} × ${item.quantity} — ${money(total)}`;
-
-    });
-
-
-  /* Build WhatsApp message */
-
-  let message =
-
-`🍽️ *NEW HUNGRY POINT CAFE ORDER*
-
-👤 *Customer:* ${customerName}
-📞 *Phone:* ${customerPhone}
-
-📦 *Order Type:* ${orderType}
-
-🛒 *ORDER ITEMS*
-${orderLines.join("\n")}
-
-💰 *TOTAL:* ${money(getCartTotal())}`;
-
-
-  if (orderType === "Delivery") {
-
-    message +=
-
-`\n\n📍 *Delivery Address:*
-${address}`;
-
-  }
-
-
-  if (notes) {
-
-    message +=
-
-`\n\n📝 *Special Instructions:*
-${notes}`;
-
-  }
-
-
-  message +=
-
-`\n\n━━━━━━━━━━━━━━
-Thank you for ordering from Hungry Point Cafe! ❤️`;
-
-
-  /* Encode message */
-
-  const encodedMessage =
-    encodeURIComponent(message);
-
-
-  /* WhatsApp URL */
-
-  const whatsappURL =
-    `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
-
-
-  /* Open WhatsApp */
-
-  window.open(
-    whatsappURL,
-    "_blank",
-    "noopener,noreferrer"
-  );
-
-
-}
-
-
-/* ================= ESCAPE HTML ================= */
-
-function escapeHTML(value) {
-
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-
-}
-
-
-function escapeAttribute(value) {
-
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-
-}
-
-
-/* ================= ADDED MESSAGE ================= */
-
-function showAddedMessage(name) {
-
-  const message =
-    document.createElement("div");
-
-  message.className =
-    "cart-toast";
-
-  message.innerHTML = `
-    <span>✓</span>
-    ${escapeHTML(name)} added to cart
-  `;
-
-  document.body.appendChild(message);
-
-
-  setTimeout(() => {
-
-    message.classList.add(
-      "show"
-    );
-
-  }, 20);
-
-
-  setTimeout(() => {
-
-    message.classList.remove(
-      "show"
-    );
-
-    setTimeout(() => {
-
-      message.remove();
-
-    }, 300);
-
-  }, 1800);
-
-}
-
-
-/* ================= ADD BUTTONS ================= */
-
-document
-  .querySelectorAll(".add-btn")
-  .forEach(button => {
+  $$("[data-clear-cart]").forEach(button => {
 
     button.addEventListener(
       "click",
       () => {
 
-        const name =
-          button.dataset.name;
+        cart = [];
 
-        const price =
-          Number(button.dataset.price);
+        renderCart();
 
-        addToCart(
-          name,
-          price
+        renderCheckoutSummary();
+
+        showToast(
+          "Cart cleared",
+          "All items have been removed."
         );
 
       }
@@ -840,179 +878,254 @@ document
   });
 
 
-/* ================= CART EVENTS ================= */
+  /* =======================================================
+     CHECKOUT FORM
+  ======================================================= */
 
-openCartBtn?.addEventListener(
-  "click",
-  openCart
-);
+  const checkoutForm =
+    $("#checkoutForm");
 
-closeCartBtn?.addEventListener(
-  "click",
-  closeCart
-);
+  if (checkoutForm) {
 
-cartOverlay?.addEventListener(
-  "click",
-  closeCart
-);
+    checkoutForm.addEventListener(
+      "submit",
+      event => {
 
+        event.preventDefault();
 
-/* ================= CHECKOUT EVENTS ================= */
+        if (cart.length === 0) {
 
-checkoutBtn?.addEventListener(
-  "click",
-  openCheckout
-);
+          showToast(
+            "Cart is empty",
+            "Please add an item first."
+          );
 
-closeCheckoutBtn?.addEventListener(
-  "click",
-  closeCheckout
-);
+          return;
+
+        }
 
 
-checkoutOverlay?.addEventListener(
-  "click",
-  event => {
-
-    if (
-      event.target === checkoutOverlay
-    ) {
-
-      closeCheckout();
-
-    }
-
-  }
-);
+        const formData =
+          new FormData(checkoutForm);
 
 
-/* ================= FORM EVENTS ================= */
+        const name =
+          formData.get("name") ||
+          formData.get("customerName") ||
+          "";
 
-checkoutForm?.addEventListener(
-  "submit",
-  sendWhatsAppOrder
-);
+        const phone =
+          formData.get("phone") ||
+          formData.get("customerPhone") ||
+          "";
+
+        const address =
+          formData.get("address") ||
+          "";
+
+        const notes =
+          formData.get("notes") ||
+          "";
+
+        const orderType =
+          formData.get("orderType") ||
+          formData.get("deliveryType") ||
+          "Delivery";
 
 
-document
-  .querySelectorAll(
-    'input[name="orderType"]'
-  )
-  .forEach(radio => {
+        if (!name.trim()) {
 
-    radio.addEventListener(
-      "change",
-      updateOrderType
+          showToast(
+            "Name required",
+            "Please enter your name."
+          );
+
+          return;
+
+        }
+
+
+        if (!phone.trim()) {
+
+          showToast(
+            "Phone required",
+            "Please enter your phone number."
+          );
+
+          return;
+
+        }
+
+
+        if (
+          orderType.toLowerCase()
+            .includes("delivery") &&
+          !address.trim()
+        ) {
+
+          showToast(
+            "Address required",
+            "Please enter your delivery address."
+          );
+
+          return;
+
+        }
+
+
+        const message =
+          createWhatsAppOrder({
+            name,
+            phone,
+            address,
+            notes,
+            orderType
+          });
+
+
+        const whatsappURL =
+          `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+
+        window.open(
+          whatsappURL,
+          "_blank",
+          "noopener,noreferrer"
+        );
+
+
+        showToast(
+          "Order ready",
+          "Opening WhatsApp..."
+        );
+
+      }
     );
 
-  });
-
-
-/* ================= HERO ORDER ================= */
-
-heroOrderBtn?.addEventListener(
-  "click",
-  () => {
-
-    if (cart.length > 0) {
-
-      openCart();
-
-    } else {
-
-      document
-        .getElementById("menu")
-        ?.scrollIntoView({
-          behavior: "smooth"
-        });
-
-    }
-
   }
-);
 
 
-/* ================= DELIVERY ORDER ================= */
+  /* =======================================================
+     CREATE WHATSAPP ORDER
+  ======================================================= */
 
-deliveryOrderBtn?.addEventListener(
-  "click",
-  () => {
+  const createWhatsAppOrder = ({
+    name,
+    phone,
+    address,
+    notes,
+    orderType
+  }) => {
 
-    if (cart.length > 0) {
+    const lines = [];
 
-      openCart();
+    lines.push(
+      `Hello ${CAFE_NAME}!`
+    );
 
-    } else {
+    lines.push(
+      `I would like to place an order.`
+    );
 
-      document
-        .getElementById("menu")
-        ?.scrollIntoView({
-          behavior: "smooth"
-        });
+    lines.push("");
 
-    }
+    lines.push(
+      `*Customer Details*`
+    );
 
-  }
-);
+    lines.push(
+      `Name: ${name}`
+    );
 
+    lines.push(
+      `Phone: ${phone}`
+    );
 
-/* ================= MENU BROWSE ================= */
+    lines.push(
+      `Order Type: ${orderType}`
+    );
 
-browseMenuBtn?.addEventListener(
-  "click",
-  () => {
+    if (address.trim()) {
 
-    closeCart();
-
-    document
-      .getElementById("menu")
-      ?.scrollIntoView({
-        behavior: "smooth"
-      });
-
-  }
-);
-
-
-/* ================= MOBILE MENU ================= */
-
-menuToggle?.addEventListener(
-  "click",
-  () => {
-
-    const isOpen =
-      navLinks?.classList.toggle(
-        "active"
+      lines.push(
+        `Address: ${address}`
       );
 
+    }
 
-    menuToggle.setAttribute(
-      "aria-expanded",
-      String(!!isOpen)
+    lines.push("");
+
+    lines.push(
+      `*Order Details*`
     );
 
-  }
-);
+
+    cart.forEach((item, index) => {
+
+      lines.push(
+        `${index + 1}. ${item.name} × ${item.quantity} — ${formatPrice(
+          item.price * item.quantity
+        )}`
+      );
+
+    });
 
 
-/* Close mobile navigation */
+    lines.push("");
 
-navLinks
-  ?.querySelectorAll("a")
-  .forEach(link => {
+    lines.push(
+      `*Total: ${formatPrice(getCartTotal())}*`
+    );
 
-    link.addEventListener(
+
+    if (notes.trim()) {
+
+      lines.push("");
+
+      lines.push(
+        `Notes: ${notes}`
+      );
+
+    }
+
+
+    lines.push("");
+
+    lines.push(
+      `Cafe: ${CAFE_NAME}`
+    );
+
+    lines.push(
+      `Location: ${CAFE_ADDRESS}`
+    );
+
+
+    return lines.join("\n");
+
+  };
+
+
+  /* =======================================================
+     DIRECT WHATSAPP ORDER BUTTONS
+  ======================================================= */
+
+  $$("[data-whatsapp]").forEach(button => {
+
+    button.addEventListener(
       "click",
       () => {
 
-        navLinks.classList.remove(
-          "active"
-        );
+        const message =
+          button.dataset.message ||
+          `Hello ${CAFE_NAME}! I would like to know more about your menu.`;
 
-        menuToggle?.setAttribute(
-          "aria-expanded",
-          "false"
+        const url =
+          `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+        window.open(
+          url,
+          "_blank",
+          "noopener,noreferrer"
         );
 
       }
@@ -1021,146 +1134,541 @@ navLinks
   });
 
 
-/* ================= MENU IMAGE MODAL ================= */
+  /* =======================================================
+     MENU MODAL
+  ======================================================= */
 
-menuPreview?.addEventListener(
-  "click",
-  () => {
+  const menuModalOverlay =
+    $(".menu-modal-overlay") ||
+    $("[data-menu-modal]");
 
-    modal?.classList.add(
-      "active"
+  const openMenuButtons =
+    $$("[data-menu-open]");
+
+  const closeMenuButtons =
+    $$("[data-menu-close]");
+
+
+  const openMenuModal = () => {
+
+    if (!menuModalOverlay) return;
+
+    menuModalOverlay.classList.add("active");
+
+    document.body.classList.add("no-scroll");
+
+  };
+
+
+  const closeMenuModal = () => {
+
+    if (!menuModalOverlay) return;
+
+    menuModalOverlay.classList.remove("active");
+
+    document.body.classList.remove("no-scroll");
+
+  };
+
+
+  openMenuButtons.forEach(button => {
+
+    button.addEventListener(
+      "click",
+      openMenuModal
     );
 
-    modal?.setAttribute(
-      "aria-hidden",
-      "false"
+  });
+
+
+  closeMenuButtons.forEach(button => {
+
+    button.addEventListener(
+      "click",
+      closeMenuModal
     );
 
-    document.body.classList.add(
-      "modal-open"
-    );
-
-  }
-);
+  });
 
 
-modalClose?.addEventListener(
-  "click",
-  closeMenuModal
-);
+  if (menuModalOverlay) {
 
+    menuModalOverlay.addEventListener(
+      "click",
+      event => {
 
-modal?.addEventListener(
-  "click",
-  event => {
+        if (
+          event.target === menuModalOverlay
+        ) {
 
-    if (
-      event.target === modal
-    ) {
+          closeMenuModal();
 
-      closeMenuModal();
+        }
 
-    }
-
-  }
-);
-
-
-function closeMenuModal() {
-
-  modal?.classList.remove(
-    "active"
-  );
-
-  modal?.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-
-  document.body.classList.remove(
-    "modal-open"
-  );
-
-}
-
-
-/* ================= ESC KEY ================= */
-
-document.addEventListener(
-  "keydown",
-  event => {
-
-    if (event.key !== "Escape") return;
-
-    closeCart();
-    closeCheckout();
-    closeMenuModal();
-
-  }
-);
-
-
-/* ================= SCROLL REVEAL ================= */
-
-const revealElements =
-  document.querySelectorAll(
-    ".reveal"
-  );
-
-
-if (
-  "IntersectionObserver" in window
-) {
-
-  const observer =
-    new IntersectionObserver(
-      entries => {
-
-        entries.forEach(entry => {
-
-          if (
-            entry.isIntersecting
-          ) {
-
-            entry.target.classList.add(
-              "visible"
-            );
-
-            observer.unobserve(
-              entry.target
-            );
-
-          }
-
-        });
-
-      },
-      {
-        threshold: 0.12
       }
     );
 
+  }
 
-  revealElements.forEach(
-    element =>
-      observer.observe(element)
+
+  /* =======================================================
+     SMOOTH ANCHOR LINKS
+  ======================================================= */
+
+  $$('a[href^="#"]').forEach(link => {
+
+    link.addEventListener(
+      "click",
+      event => {
+
+        const id =
+          link.getAttribute("href");
+
+        if (
+          !id ||
+          id === "#" ||
+          id.length < 2
+        ) return;
+
+
+        const target =
+          document.querySelector(id);
+
+        if (!target) return;
+
+
+        event.preventDefault();
+
+        closeMobileMenu();
+
+        target.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+      }
+    );
+
+  });
+
+
+  /* =======================================================
+     KEYBOARD CONTROLS
+  ======================================================= */
+
+  document.addEventListener(
+    "keydown",
+    event => {
+
+      if (event.key !== "Escape") return;
+
+      closeMobileMenu();
+      closeCart();
+      closeCheckout();
+      closeMenuModal();
+
+    }
   );
 
-} else {
 
-  revealElements.forEach(
-    element =>
-      element.classList.add(
-        "visible"
-      )
+  /* =======================================================
+     TOAST
+  ======================================================= */
+
+  let toastTimer = null;
+
+
+  window.showToast = (
+    title,
+    message
+  ) => {
+
+    const toast =
+      $(".toast");
+
+    if (!toast) return;
+
+
+    const titleElement =
+      $(".toast strong", toast);
+
+    const messageElement =
+      $(".toast p", toast);
+
+
+    if (titleElement) {
+      titleElement.textContent = title;
+    }
+
+    if (messageElement) {
+      messageElement.textContent = message;
+    }
+
+
+    toast.classList.add("show");
+
+
+    clearTimeout(toastTimer);
+
+
+    toastTimer =
+      setTimeout(() => {
+
+        toast.classList.remove("show");
+
+      }, 3200);
+
+  };
+
+
+  /* =======================================================
+     HERO PARALLAX
+  ======================================================= */
+
+  const heroVisual =
+    $(".hero-visual");
+
+  if (
+    heroVisual &&
+    window.matchMedia(
+      "(min-width: 851px)"
+    ).matches
+  ) {
+
+    window.addEventListener(
+      "mousemove",
+      event => {
+
+        const x =
+          (event.clientX /
+            window.innerWidth -
+            0.5) * 10;
+
+        const y =
+          (event.clientY /
+            window.innerHeight -
+            0.5) * 10;
+
+
+        heroVisual.style.transform =
+          `translate(${x}px, ${y}px)`;
+
+      },
+      { passive: true }
+    );
+
+  }
+
+
+  /* =======================================================
+     BUTTON RIPPLE
+  ======================================================= */
+
+  $$(
+    ".primary-btn, .secondary-btn, .outline-btn"
+  ).forEach(button => {
+
+    button.addEventListener(
+      "click",
+      event => {
+
+        const rect =
+          button.getBoundingClientRect();
+
+        const ripple =
+          document.createElement("span");
+
+        ripple.style.position =
+          "absolute";
+
+        ripple.style.left =
+          `${event.clientX - rect.left}px`;
+
+        ripple.style.top =
+          `${event.clientY - rect.top}px`;
+
+        ripple.style.width =
+          "8px";
+
+        ripple.style.height =
+          "8px";
+
+        ripple.style.borderRadius =
+          "50%";
+
+        ripple.style.background =
+          "rgba(255,255,255,0.25)";
+
+        ripple.style.transform =
+          "translate(-50%, -50%) scale(0)";
+
+        ripple.style.pointerEvents =
+          "none";
+
+        ripple.style.transition =
+          "transform .55s ease, opacity .55s ease";
+
+        button.style.position =
+          "relative";
+
+        button.style.overflow =
+          "hidden";
+
+        button.appendChild(ripple);
+
+
+        requestAnimationFrame(() => {
+
+          ripple.style.transform =
+            "translate(-50%, -50%) scale(25)";
+
+          ripple.style.opacity =
+            "0";
+
+        });
+
+
+        setTimeout(() => {
+
+          ripple.remove();
+
+        }, 600);
+
+      }
+    );
+
+  });
+
+
+  /* =======================================================
+     COUNTER ANIMATION
+  ======================================================= */
+
+  const counters =
+    $$("[data-counter]");
+
+
+  if (
+    counters.length &&
+    "IntersectionObserver" in window
+  ) {
+
+    const counterObserver =
+      new IntersectionObserver(
+        entries => {
+
+          entries.forEach(entry => {
+
+            if (!entry.isIntersecting)
+              return;
+
+
+            const element =
+              entry.target;
+
+            const target =
+              Number(
+                element.dataset.counter
+              );
+
+
+            if (
+              Number.isNaN(target)
+            ) return;
+
+
+            let start = 0;
+
+            const duration = 1000;
+
+            const startTime =
+              performance.now();
+
+
+            const animate =
+              currentTime => {
+
+                const progress =
+                  Math.min(
+                    (currentTime - startTime) /
+                    duration,
+                    1
+                  );
+
+
+                const eased =
+                  1 -
+                  Math.pow(
+                    1 - progress,
+                    3
+                  );
+
+
+                const value =
+                  Math.floor(
+                    start +
+                    (target - start) *
+                    eased
+                  );
+
+
+                element.textContent =
+                  value;
+
+
+                if (progress < 1) {
+
+                  requestAnimationFrame(
+                    animate
+                  );
+
+                }
+
+              };
+
+
+            requestAnimationFrame(
+              animate
+            );
+
+
+            counterObserver.unobserve(
+              element
+            );
+
+          });
+
+        },
+        {
+          threshold: 0.7
+        }
+      );
+
+
+    counters.forEach(counter => {
+
+      counterObserver.observe(counter);
+
+    });
+
+  }
+
+
+  /* =======================================================
+     ORDER TYPE → ADDRESS
+  ======================================================= */
+
+  const orderTypeInputs =
+    $$(
+      'input[name="orderType"], input[name="deliveryType"]'
+    );
+
+  const addressGroup =
+    $(
+      '[data-address-group]'
+    ) ||
+    $(
+      '#addressGroup'
+    );
+
+
+  const updateAddressVisibility = () => {
+
+    if (
+      !addressGroup ||
+      orderTypeInputs.length === 0
+    ) return;
+
+
+    const selected =
+      orderTypeInputs.find(
+        input => input.checked
+      );
+
+
+    if (!selected) return;
+
+
+    const value =
+      selected.value.toLowerCase();
+
+
+    const isDelivery =
+      value.includes("delivery");
+
+
+    addressGroup.style.display =
+      isDelivery
+        ? ""
+        : "none";
+
+
+    const input =
+      $("input, textarea", addressGroup);
+
+
+    if (input) {
+
+      input.required =
+        isDelivery;
+
+    }
+
+  };
+
+
+  orderTypeInputs.forEach(input => {
+
+    input.addEventListener(
+      "change",
+      updateAddressVisibility
+    );
+
+  });
+
+
+  updateAddressVisibility();
+
+
+  /* =======================================================
+     MENU ITEM HOVER
+  ======================================================= */
+
+  $$(".food-card").forEach(card => {
+
+    card.addEventListener(
+      "mouseenter",
+      () => {
+
+        card.style.setProperty(
+          "--mouse-x",
+          "50%"
+        );
+
+        card.style.setProperty(
+          "--mouse-y",
+          "50%"
+        );
+
+      }
+    );
+
+  });
+
+
+  /* =======================================================
+     INITIALIZE
+  ======================================================= */
+
+  renderCart();
+
+  updateActiveNav();
+
+  updateAddressVisibility();
+
+
+  console.log(
+    `${CAFE_NAME} website initialized successfully.`
   );
 
-}
-
-
-/* ================= INITIALIZE ================= */
-
-renderCart();
-
-updateOrderType();
-```
+});
